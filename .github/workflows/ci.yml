@@ -2,17 +2,24 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
+    name: PHP ${{ matrix.php-version }} - Symfony ${{ matrix.symfony-version }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+        symfony-version: ['6.3.*', '6.4.*']
 
     env:
       APP_ENV: test
-      DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=8.0&charset=utf8mb4
+      DATABASE_URL: "mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0&charset=utf8mb4"
 
     services:
       mysql:
@@ -31,12 +38,13 @@ jobs:
           --health-retries=5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php-version }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom
           coverage: xdebug
 
@@ -45,24 +53,27 @@ jobs:
 
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ matrix.symfony-version }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ matrix.symfony-version }}-
             ${{ runner.os }}-composer-
 
       - name: Cache Symfony
         uses: actions/cache@v4
         with:
           path: var/cache
-          key: ${{ runner.os }}-symfony-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-symfony-${{ matrix.php-version }}-${{ matrix.symfony-version }}-${{ hashFiles('**/composer.lock') }}
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: Install Symfony ${{ matrix.symfony-version }}
+        run: |
+          composer require "symfony/framework-bundle:${{ matrix.symfony-version }}" --no-update
+          composer update --prefer-dist --no-progress
 
       - name: Setup test database
         run: |
