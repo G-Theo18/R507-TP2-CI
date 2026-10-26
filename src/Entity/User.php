@@ -120,8 +120,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function initPassword(UserPasswordHasherInterface $hasher): static
     {
-        if (empty($this->getPlainPassword()))
+        if (empty($this->getPlainPassword())) {
             return $this;
+        }
 
         $this->setPassword($hasher->hashPassword(
             $this, $this->getPlainPassword()

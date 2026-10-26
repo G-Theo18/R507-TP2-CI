@@ -60,3 +60,15 @@ jobs:
           files: ./coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+
+      - name: Warm up dev cache for PHPStan
+        run: php bin/console cache:warmup --env=dev
+
+      - name: PHPStan Static Analysis
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+
+      - name: PHP CS Fixer
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
+      - name: Security Check
+        run: composer audit

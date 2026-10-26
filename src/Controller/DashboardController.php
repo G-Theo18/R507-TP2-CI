@@ -14,9 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
     routePath: '/admin',
     routeName: 'admin',
     routeOptions: [
-        "requirements" => ['domain' => '%app_base_domain%'],
-        "defaults" => ['domain' => '%app_base_domain%'],
-        "host" => '{domain}',
+        'requirements' => ['domain' => '%app_base_domain%'],
+        'defaults' => ['domain' => '%app_base_domain%'],
+        'host' => '{domain}',
     ],
 )]
 class DashboardController extends AbstractDashboardController

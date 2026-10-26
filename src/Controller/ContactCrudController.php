@@ -29,7 +29,7 @@ class ContactCrudController extends AbstractCrudController
         $markAsArchived = Action::new('markAsArchived', 'Marquer comme archivé')
             ->linkToCrudAction('markAsArchived')
             ->displayIf(function (Contact $object) {
-                return $object->getStatus() == 'treated';
+                return 'treated' == $object->getStatus();
             })
             ->addCssClass('btn btn-primary')
         ;
@@ -45,7 +45,7 @@ class ContactCrudController extends AbstractCrudController
         $object = $em->find(Contact::class, $request->query->get('entityId'));
 
         if (empty($object)) {
-            $this->addFlash('danger',"Le contact n'a pas été trouvé");
+            $this->addFlash('danger', "Le contact n'a pas été trouvé");
 
             return $this->redirectToRoute('admin_contact_index');
         }
@@ -53,7 +53,7 @@ class ContactCrudController extends AbstractCrudController
         $object->setStatus('treated');
         $em->flush();
 
-        $this->addFlash('success',"Le contact a été marqué comme traité");
+        $this->addFlash('success', 'Le contact a été marqué comme traité');
 
         return $this->redirectToRoute('admin_contact_detail', ['entityId' => $object->getId()]);
     }
@@ -63,7 +63,7 @@ class ContactCrudController extends AbstractCrudController
         $object = $em->find(Contact::class, $request->query->get('entityId'));
 
         if (empty($object)) {
-            $this->addFlash('danger',"Le contact n'a pas été trouvé");
+            $this->addFlash('danger', "Le contact n'a pas été trouvé");
 
             return $this->redirectToRoute('admin_contact_index');
         }
@@ -71,7 +71,7 @@ class ContactCrudController extends AbstractCrudController
         $object->setStatus('archived');
         $em->flush();
 
-        $this->addFlash('success',"Le contact a été marqué comme archivé");
+        $this->addFlash('success', 'Le contact a été marqué comme archivé');
 
         return $this->redirectToRoute('admin_contact_detail', ['entityId' => $object->getId()]);
     }
