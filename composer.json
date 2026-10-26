@@ -1,4 +1,6 @@
 {
+    "name": "g-theo18/r507-tp2-ci",
+    "description": "Application Symfony de contact - TP2 CI",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "dev",
