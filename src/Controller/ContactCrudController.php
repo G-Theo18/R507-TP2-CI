@@ -8,8 +8,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @extends AbstractCrudController<Contact>
+ */
 class ContactCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -40,7 +44,7 @@ class ContactCrudController extends AbstractCrudController
             ->add(Crud::PAGE_DETAIL, $markAsArchived);
     }
 
-    public function markAsTreated(Request $request, EntityManagerInterface $em)
+    public function markAsTreated(Request $request, EntityManagerInterface $em): RedirectResponse
     {
         $object = $em->find(Contact::class, $request->query->get('entityId'));
 
@@ -58,7 +62,7 @@ class ContactCrudController extends AbstractCrudController
         return $this->redirectToRoute('admin_contact_detail', ['entityId' => $object->getId()]);
     }
 
-    public function markAsArchived(Request $request, EntityManagerInterface $em)
+    public function markAsArchived(Request $request, EntityManagerInterface $em): RedirectResponse
     {
         $object = $em->find(Contact::class, $request->query->get('entityId'));
 
