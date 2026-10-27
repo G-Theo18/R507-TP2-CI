@@ -8,21 +8,22 @@ on:
 
 jobs:
   test:
-    name: PHP ${{ matrix.php-version }}
+    name: PHP ${{ matrix.php-version }} - MySQL ${{ matrix.mysql-version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         php-version: ['8.2', '8.3', '8.4']
+        mysql-version: ['8.0', '8.4']
 
     env:
       APP_ENV: test
-      DATABASE_URL: "mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=8.0&charset=utf8mb4"
+      DATABASE_URL: "mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=${{ matrix.mysql-version }}&charset=utf8mb4"
 
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:${{ matrix.mysql-version }}
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: symfony_test
